@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# 测试/运行产生的临时文件
+*.log
+undo-*.sh
+sortbox-run-*.log
+
+# 编辑器/系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
