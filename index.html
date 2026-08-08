@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>sortbox · 命令行文件整理工具</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2330; --border:#2a3340;
+    --fg:#e6edf3; --muted:#8b949e; --accent:#4f9dff; --accent2:#3fb950;
+    --warn:#d29922; --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+    font-family:"Segoe UI",-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    line-height:1.6;}
+  .wrap{max-width:960px;margin:0 auto;padding:48px 20px 80px}
+  header.hero{text-align:center;padding:30px 0 10px}
+  .logo{font-size:54px;font-weight:800;letter-spacing:-1px}
+  .logo .box{color:var(--accent)}
+  .tag{color:var(--muted);font-size:18px;margin-top:6px}
+  .badges{margin:16px 0;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+  .badge{background:var(--panel);border:1px solid var(--border);color:var(--muted);
+    padding:4px 12px;border-radius:999px;font-size:13px}
+  .level{color:var(--accent2);border-color:var(--accent2)}
+  section{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+    padding:24px;margin:22px 0}
+  h2{margin:0 0 14px;font-size:22px;display:flex;align-items:center;gap:10px}
+  h2 .dot{width:10px;height:10px;border-radius:50%;background:var(--accent)}
+  p{color:#c9d1d9}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+  .card{background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:16px}
+  .card .ic{font-size:24px}
+  .card h3{margin:8px 0 4px;font-size:16px}
+  .card p{margin:0;font-size:13.5px;color:var(--muted)}
+  pre{background:#0a0e14;border:1px solid var(--border);border-radius:10px;
+    padding:16px;overflow:auto;font-size:13.5px;color:#c9d1d9}
+  code{font-family:"Cascadia Code",Consolas,Menlo,monospace}
+  .term{color:var(--accent2)}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border)}
+  th{color:var(--muted);font-weight:600}
+  td code{background:var(--panel2);padding:2px 6px;border-radius:6px;color:var(--accent)}
+  .demo{border:1px dashed var(--accent);background:var(--panel2)}
+  .picker{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+  .btn{background:var(--accent);color:#04121f;border:none;padding:10px 16px;border-radius:8px;
+    font-weight:700;cursor:pointer;font-size:14px}
+  .btn:hover{filter:brightness(1.08)}
+  .hint{color:var(--muted);font-size:13px}
+  #result{display:none;margin-top:8px}
+  .cat{display:flex;justify-content:space-between;padding:8px 10px;border-bottom:1px solid var(--border);font-size:14px}
+  .cat .n{color:var(--accent);font-weight:700}
+  .filelist{max-height:160px;overflow:auto;font-size:12.5px;color:var(--muted);margin-top:6px}
+  .footer{text-align:center;color:var(--muted);font-size:13px;margin-top:30px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="logo"><span class="box">sort</span>box</div>
+    <div class="tag">零依赖命令行文件整理工具 · 一个命令收拾干净你的下载文件夹</div>
+    <div class="badges">
+      <span class="badge level">难度 L2</span>
+      <span class="badge">Python 标准库</span>
+      <span class="badge">跨平台</span>
+      <span class="badge">MIT License</span>
+    </div>
+  </header>
+
+  <section>
+    <h2><span class="dot"></span>它解决什么问题</h2>
+    <p>下载目录里图片、文档、压缩包、代码搅成一团？手动分拣费时又容易出错。
+    <code>sortbox</code> 用一条命令把文件按<strong>扩展名</strong>或<strong>修改日期</strong>自动归类到子目录，
+    支持预览、回退脚本和安全重名处理——不依赖任何第三方库。</p>
+  </section>
+
+  <section>
+    <h2><span class="dot"></span>核心特性</h2>
+    <div class="grid">
+      <div class="card"><div class="ic">🗂️</div><h3>按扩展名分类</h3><p>图片/文档/代码/压缩包/音视频/其他，自动分目录。</p></div>
+      <div class="card"><div class="ic">📅</div><h3>按日期分类</h3><p>按修改时间归入 YYYY-MM 月目录。</p></div>
+      <div class="card"><div class="ic">👀</div><h3>dry-run 预览</h3><p>先看清会动哪些文件，再决定是否执行。</p></div>
+      <div class="card"><div class="ic">↩️</div><h3>undo 回退</h3><p>一键生成反向 mv 脚本，手滑也能救。</p></div>
+      <div class="card"><div class="ic">🔒</div><h3>安全重名</h3><p>目标存在时自动加 _1 序号，绝不静默覆盖。</p></div>
+      <div class="card"><div class="ic">🔁</div><h3>递归整理</h3><p>连子目录里的文件一起收拾。</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="dot"></span>快速上手</h2>
+    <pre><span class="term"># 预览（不改动任何文件）</span>
+python sortbox.py ~/Downloads --dry-run
+
+<span class="term"># 真正整理到原目录下的分类子文件夹</span>
+python sortbox.py ~/Downloads
+
+<span class="term"># 整理到指定目录 + 生成回退脚本</span>
+python sortbox.py ~/Downloads --target ~/Sorted --undo undo.sh
+
+<span class="term"># 按修改日期归类 / 递归处理</span>
+python sortbox.py ~/Photos --mode date
+python sortbox.py ./mess --recursive</pre>
+  </section>
+
+  <section>
+    <h2><span class="dot"></span>命令参数</h2>
+    <table>
+      <tr><th>参数</th><th>说明</th></tr>
+      <tr><td><code>path</code></td><td>要整理的目录，默认当前目录 <code>.</code></td></tr>
+      <tr><td><code>-t/--target</code></td><td>分类目标根目录（默认与源目录相同）</td></tr>
+      <tr><td><code>-r/--recursive</code></td><td>递归处理子目录中的文件</td></tr>
+      <tr><td><code>-m/--mode</code></td><td><code>ext</code>（按扩展名，默认）或 <code>date</code>（按修改日期）</td></tr>
+      <tr><td><code>--map</code></td><td>自定义分类映射 JSON 文件</td></tr>
+      <tr><td><code>-n/--dry-run</code></td><td>只预览，不真正移动文件</td></tr>
+      <tr><td><code>-u/--undo</code></td><td>执行后写出回退脚本到该路径</td></tr>
+      <tr><td><code>-l/--log</code></td><td>把执行动作追加写入日志文件</td></tr>
+    </table>
+  </section>
+
+  <section class="demo">
+    <h2><span class="dot"></span>在线试一试（纯本地，文件不上传）</h2>
+    <p class="hint">选择一个本地文件夹，浏览器会在本地按扩展名模拟 sortbox 的分类结果，不会上传任何文件。</p>
+    <div class="picker">
+      <input type="file" id="folder" webkitdirectory directory multiple />
+      <span class="hint" id="status">未选择文件夹</span>
+    </div>
+    <div id="result">
+      <div id="cats"></div>
+      <div class="filelist" id="files"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="dot"></span>工作原理</h2>
+    <p>① <strong>扫描</strong>：列出目录（或递归）下所有文件，跳过目录与隐藏文件。<br/>
+    ② <strong>分类</strong>：扩展名查映射表 → 分类目录；或读 mtime → <code>YYYY-MM</code>。<br/>
+    ③ <strong>规划</strong>：计算目标路径，目标已存在则自动加 <code>_1</code> 序号避免覆盖。<br/>
+    ④ <strong>执行</strong>：建目录并移动；可同时写出反向 <code>mv</code> 脚本以便回退。</p>
+  </section>
+
+  <div class="footer">
+    返回 <a href="https://1fzx23.github.io/my-tools/">工具箱母页</a> ·
+    源码 <a href="https://github.com/1fzx23/sortbox">github.com/1fzx23/sortbox</a> ·
+    MIT © 1fzx23
+  </div>
+
+</div>
+
+<script>
+const MAP = {
+  ".jpg":"Images",".jpeg":"Images",".png":"Images",".gif":"Images",".bmp":"Images",
+  ".webp":"Images",".svg":"Images",".ico":"Images",".tiff":"Images",".heic":"Images",
+  ".pdf":"Documents",".doc":"Documents",".docx":"Documents",".txt":"Documents",".md":"Documents",
+  ".rtf":"Documents",".odt":"Documents",".ppt":"Documents",".pptx":"Documents",".xls":"Documents",
+  ".xlsx":"Documents",".csv":"Documents",".epub":"Documents",".tex":"Documents",
+  ".py":"Code",".js":"Code",".ts":"Code",".tsx":"Code",".jsx":"Code",".java":"Code",
+  ".c":"Code",".cpp":"Code",".h":"Code",".hpp":"Code",".cs":"Code",".go":"Code",".rs":"Code",
+  ".rb":"Code",".php":"Code",".sh":"Code",".bash":"Code",".ps1":"Code",".sql":"Code",
+  ".html":"Code",".css":"Code",".scss":"Code",".json":"Code",".yaml":"Code",".yml":"Code",
+  ".toml":"Code",".xml":"Code",".ini":"Code",
+  ".zip":"Archives",".tar":"Archives",".gz":"Archives",".bz2":"Archives",".xz":"Archives",
+  ".7z":"Archives",".rar":"Archives",".tgz":"Archives",
+  ".mp3":"Audio",".wav":"Audio",".flac":"Audio",".aac":"Audio",".ogg":"Audio",".m4a":"Audio",
+  ".mp4":"Video",".mkv":"Video",".mov":"Video",".avi":"Video",".webm":"Video",".flv":"Video",".wmv":"Video"
+};
+const input = document.getElementById('folder');
+const status = document.getElementById('status');
+const result = document.getElementById('result');
+const cats = document.getElementById('cats');
+const files = document.getElementById('files');
+
+input.addEventListener('change', () => {
+  const list = Array.from(input.files || []);
+  if (!list.length) { status.textContent = '未选择文件夹'; result.style.display='none'; return; }
+  const counts = {};
+  const samples = {};
+  for (const f of list) {
+    if (f.name.startsWith('.')) continue;
+    const ext = (f.name.lastIndexOf('.') >= 0) ? f.name.slice(f.name.lastIndexOf('.')).toLowerCase() : '';
+    const cat = MAP[ext] || 'Others';
+    counts[cat] = (counts[cat]||0) + 1;
+    (samples[cat] = samples[cat] || []).push(f.name);
+  }
+  status.textContent = `已分析 ${list.length} 个文件`;
+  cats.innerHTML = Object.keys(counts).sort().map(c =>
+    `<div class="cat"><span>${c}/</span><span class="n">${counts[c]}</span></div>`).join('');
+  files.innerHTML = Object.keys(samples).sort().map(c =>
+    `<div style="margin-top:6px;color:var(--fg)">${c}/: ${samples[c].slice(0,8).join(', ')}${samples[c].length>8?' …':''}</div>`).join('');
+  result.style.display = 'block';
+});
+</script>
+</body>
+</html>
